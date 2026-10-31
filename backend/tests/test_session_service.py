@@ -10,7 +10,7 @@ from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session
 
 from app.core.config import Settings
-from app.models import Base, RefreshToken, User, UserSession
+from app.models import Base, RefreshToken, User
 from app.services.session_service import SessionError, SessionService
 from app.services.token_service import TokenService
 
