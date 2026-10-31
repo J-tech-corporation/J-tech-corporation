@@ -3,7 +3,7 @@
 from uuid import UUID
 
 import pytest
-from sqlalchemy import create_engine
+from sqlalchemy import Uuid, create_engine
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -15,8 +15,9 @@ def test_identity_tables_are_registered_with_uuid_primary_keys() -> None:
 
     assert expected_tables.issubset(Base.metadata.tables)
     for table_name in expected_tables:
-        assert isinstance(Base.metadata.tables[table_name].c.id.type, object)
-        assert Base.metadata.tables[table_name].c.id.primary_key
+        id_column = Base.metadata.tables[table_name].c.id
+        assert isinstance(id_column.type, Uuid)
+        assert id_column.primary_key
 
 
 def test_user_role_relationships_work_with_isolated_sqlite() -> None:
@@ -78,10 +79,20 @@ def test_role_name_and_permission_code_are_unique() -> None:
 
     try:
         with Session(engine) as session:
+            session.add_all([Role(name="CEO"), Role(name="CEO")])
+            with pytest.raises(IntegrityError):
+                session.commit()
+    finally:
+        engine.dispose()
+
+    engine = create_engine("sqlite+pysqlite:///:memory:")
+    Base.metadata.create_all(engine)
+    try:
+        with Session(engine) as session:
             session.add_all(
                 [
-                    Role(name="CEO"),
-                    Role(name="CEO"),
+                    Permission(code="system.approve"),
+                    Permission(code="system.approve"),
                 ]
             )
             with pytest.raises(IntegrityError):
