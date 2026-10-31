@@ -8,12 +8,16 @@ from sqlalchemy import Uuid, create_engine
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from app.models import Base, Permission, RefreshToken, Role, User, UserRole, UserSession
+from app.models import (
+    Base, MFARecoveryCode, Permission, RefreshToken, Role, TrustedDevice,
+    User, UserMFAMethod, UserRole, UserSession,
+)
 
 
 def test_identity_tables_are_registered_with_uuid_primary_keys() -> None:
     expected_tables = {
-        "users", "roles", "permissions", "user_roles", "user_sessions", "refresh_tokens"
+        "users", "roles", "permissions", "user_roles", "user_sessions", "refresh_tokens", "user_mfa_methods",
+        "mfa_recovery_codes", "trusted_devices"
     }
 
     assert expected_tables.issubset(Base.metadata.tables)
@@ -122,12 +126,42 @@ def test_user_session_and_refresh_token_relationships_work_with_sqlite() -> None
             refresh_token = RefreshToken(
                 session=user_session,
                 token_hash="a" * 64,
-                expires_at=__import__("datetime").datetime.now(__import__("datetime").UTC),
+                expires_at=datetime.now(UTC),
             )
             session.add(user)
             session.commit()
 
             assert user.sessions[0].id == user_session.id
             assert user_session.refresh_tokens[0].token_hash == refresh_token.token_hash
+    finally:
+        engine.dispose()
+
+
+def test_mfa_and_trusted_device_relationships_work_with_sqlite() -> None:
+    engine = create_engine("sqlite+pysqlite:///:memory:")
+    Base.metadata.create_all(engine)
+
+    try:
+        with Session(engine) as session:
+            user = User(
+                email="secure@example.test",
+                full_name="Secure User",
+                password_hash="argon2id-placeholder-hash",
+            )
+            method = UserMFAMethod(
+                user=user, encrypted_secret="encrypted-placeholder", is_enabled=True
+            )
+            recovery = MFARecoveryCode(mfa_method=method, code_hash="b" * 64)
+            device = TrustedDevice(
+                user=user,
+                token_hash="c" * 64,
+                expires_at=datetime.now(UTC),
+            )
+            session.add(user)
+            session.commit()
+
+            assert user.mfa_methods[0].id == method.id
+            assert method.recovery_codes[0].id == recovery.id
+            assert user.trusted_devices[0].id == device.id
     finally:
         engine.dispose()
