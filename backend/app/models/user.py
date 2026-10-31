@@ -10,10 +10,10 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.models.base import Base
 
 if TYPE_CHECKING:
+    from app.models.trusted_device import TrustedDevice
+    from app.models.user_mfa_method import UserMFAMethod
     from app.models.user_role import UserRole
     from app.models.user_session import UserSession
-    from app.models.user_mfa_method import UserMFAMethod
-    from app.models.trusted_device import TrustedDevice
 
 
 class User(Base):
