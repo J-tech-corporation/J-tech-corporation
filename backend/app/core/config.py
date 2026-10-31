@@ -32,6 +32,7 @@ class Settings(BaseSettings):
     jwt_private_key: SecretStr = SecretStr("")
     jwt_public_key: SecretStr = SecretStr("")
     jwt_key_id: str = "atech-ed25519-1"
+    mfa_encryption_key: SecretStr = SecretStr("")
     access_token_minutes: int = Field(default=15, ge=1, le=60)
     refresh_token_days: int = Field(default=7, ge=1, le=90)
 
