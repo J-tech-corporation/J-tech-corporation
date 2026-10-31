@@ -39,3 +39,9 @@ class User(Base):
     sessions: Mapped[list["UserSession"]] = relationship(
         back_populates="user", cascade="all, delete-orphan"
     )
+    mfa_methods: Mapped[list["UserMFAMethod"]] = relationship(
+        back_populates="user", cascade="all, delete-orphan"
+    )
+    trusted_devices: Mapped[list["TrustedDevice"]] = relationship(
+        back_populates="user", cascade="all, delete-orphan"
+    )
