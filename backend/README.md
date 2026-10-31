@@ -46,7 +46,7 @@ These commands are documentation only; no dependencies were installed and no com
 
 ## Current boundaries
 
-- No database connection or migrations (P1-03).
+- SQLAlchemy engine/session helpers and the initial identity migration are present. Real PostgreSQL connectivity is verified only when the optional integration test is run against a dedicated test database.
 - No login, session, token, or MFA endpoints (P1-04).
 - Password hashing primitives use Argon2id and are not yet wired into authentication.
 - Role membership helper is foundational only; authorization policies and enforcement are not yet wired into routes.
