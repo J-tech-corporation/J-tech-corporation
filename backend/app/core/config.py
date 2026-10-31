@@ -29,6 +29,11 @@ class Settings(BaseSettings):
     database_environment: Literal["local", "cloud"] = "local"
     local_database_url: SecretStr = SecretStr("")
     cloud_database_url: SecretStr = SecretStr("")
+    jwt_private_key: SecretStr = SecretStr("")
+    jwt_public_key: SecretStr = SecretStr("")
+    jwt_key_id: str = "atech-ed25519-1"
+    access_token_minutes: int = Field(default=15, ge=1, le=60)
+    refresh_token_days: int = Field(default=7, ge=1, le=90)
 
     @model_validator(mode="after")
     def require_secret_in_production(self) -> "Settings":
