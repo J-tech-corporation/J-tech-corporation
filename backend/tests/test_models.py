@@ -1,9 +1,9 @@
 """Tests for identity model metadata, relationships, and constraints."""
 
+from datetime import UTC, datetime
 from uuid import UUID
 
 import pytest
-from datetime import UTC, datetime
 from sqlalchemy import Uuid, create_engine
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
