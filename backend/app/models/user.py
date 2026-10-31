@@ -11,6 +11,7 @@ from app.models.base import Base
 
 if TYPE_CHECKING:
     from app.models.user_role import UserRole
+    from app.models.user_session import UserSession
 
 
 class User(Base):
@@ -31,5 +32,8 @@ class User(Base):
     )
 
     user_roles: Mapped[list["UserRole"]] = relationship(
+        back_populates="user", cascade="all, delete-orphan"
+    )
+    sessions: Mapped[list["UserSession"]] = relationship(
         back_populates="user", cascade="all, delete-orphan"
     )
