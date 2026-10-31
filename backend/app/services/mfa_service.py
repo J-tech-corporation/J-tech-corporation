@@ -40,7 +40,9 @@ class MFAService:
                 "Set ATECH_MFA_ENCRYPTION_KEY to a valid Fernet key"
             ) from exc
 
-    def begin_totp_setup(self, user: User, *, issuer: str = "A-TECH Corporation") -> tuple[UserMFAMethod, str, str]:
+    def begin_totp_setup(
+        self, user: User, *, issuer: str = "A-TECH Corporation"
+    ) -> tuple[UserMFAMethod, str, str]:
         """Create a pending TOTP method and return its secret and provisioning URI once."""
         if self.session.scalar(
             select(UserMFAMethod.id).where(
@@ -70,10 +72,13 @@ class MFAService:
         if method.is_enabled:
             raise MFAError("TOTP method is already enabled")
         secret = self._decrypt_secret(method.encrypted_secret)
-        if not pyotp.TOTP(secret).verify(code, for_time=(now or datetime.now(UTC)).timestamp(), valid_window=1):
+        verified_at = now or datetime.now(UTC)
+        if not pyotp.TOTP(secret).verify(
+            code, for_time=verified_at.timestamp(), valid_window=1
+        ):
             raise MFAError("Invalid or expired MFA code")
         method.is_enabled = True
-        method.verified_at = now or datetime.now(UTC)
+        method.verified_at = verified_at
         codes = [secrets.token_hex(5).upper() for _ in range(10)]
         method.recovery_codes = [
             MFARecoveryCode(code_hash=self._hash_code(value)) for value in codes
@@ -99,7 +104,9 @@ class MFAService:
             code, for_time=(now or datetime.now(UTC)).timestamp(), valid_window=1
         )
 
-    def verify_recovery_code(self, user_id: UUID, code: str, *, now: datetime | None = None) -> bool:
+    def verify_recovery_code(
+        self, user_id: UUID, code: str, *, now: datetime | None = None
+    ) -> bool:
         """Consume a recovery code exactly once."""
         method = self.session.scalar(
             select(UserMFAMethod)
