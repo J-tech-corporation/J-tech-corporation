@@ -2,7 +2,7 @@
 
 from functools import lru_cache
 
-from pydantic import SecretStr, model_validator
+from pydantic import AliasChoices, Field, SecretStr, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -21,12 +21,15 @@ class Settings(BaseSettings):
     app_env: str = "development"
     api_v1_prefix: str = "/api/v1"
     log_level: str = "INFO"
-    secret_key: SecretStr = SecretStr("")
+    secret_key: SecretStr = Field(
+        default=SecretStr(""),
+        validation_alias=AliasChoices("ATECH_SECRET_KEY", "SECRET_KEY"),
+    )
 
     @model_validator(mode="after")
     def require_secret_in_production(self) -> "Settings":
         if self.app_env.lower() == "production" and not self.secret_key.get_secret_value():
-            raise ValueError("ATECH_SECRET_KEY must be set in production")
+            raise ValueError("Set ATECH_SECRET_KEY or SECRET_KEY in production")
         return self
 
 
