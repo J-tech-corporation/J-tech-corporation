@@ -50,7 +50,11 @@ class TrustedDeviceService:
                 TrustedDevice.token_hash == self._hash(raw_token),
             )
         )
-        if device is None or device.revoked_at is not None or self._is_expired(device.expires_at, current):
+        if (
+            device is None
+            or device.revoked_at is not None
+            or self._is_expired(device.expires_at, current)
+        ):
             return False
         device.last_used_at = current
         self.session.flush()
@@ -66,7 +70,9 @@ class TrustedDeviceService:
             )
         )
 
-    def revoke_device(self, user_id: UUID, device_id: UUID, *, now: datetime | None = None) -> bool:
+    def revoke_device(
+        self, user_id: UUID, device_id: UUID, *, now: datetime | None = None
+    ) -> bool:
         """Revoke one trusted device only when it belongs to the requesting user."""
         device = self.session.scalar(
             select(TrustedDevice).where(
