@@ -1,7 +1,5 @@
 """Tests for encrypted TOTP setup and one-time recovery codes."""
 
-from datetime import UTC, datetime
-
 import pyotp
 import pytest
 from cryptography.fernet import Fernet
