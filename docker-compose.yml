@@ -1,0 +1,4 @@
+# Development scaffold only.
+# Services are intentionally not defined yet; runtime and dependency choices
+# will be implemented in their separately approved tasks.
+services: {}
