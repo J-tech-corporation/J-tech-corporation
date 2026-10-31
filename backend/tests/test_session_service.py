@@ -128,7 +128,11 @@ def test_revoke_all_sessions_revokes_refresh_tokens(session_context: Session) ->
     session_context.refresh(first)
     session_context.refresh(second)
     assert first.revoked_at is not None and second.revoked_at is not None
-    assert all(token.revoked_at is not None for item in (first, second) for token in item.refresh_tokens)
+    assert all(
+        token.revoked_at is not None
+        for item in (first, second)
+        for token in item.refresh_tokens
+    )
 
 
 def test_expired_refresh_token_is_rejected(session_context: Session) -> None:
