@@ -11,7 +11,7 @@ from app.repositories.user_repository import DuplicateUserError, UserRepository
 
 
 @pytest.fixture
- def session():
+def session():
     engine = create_engine("sqlite+pysqlite:///:memory:")
     Base.metadata.create_all(engine)
     with Session(engine) as db_session:
