@@ -6,7 +6,6 @@ from datetime import UTC, datetime, timedelta
 from uuid import UUID
 
 import jwt
-from pydantic import SecretStr
 
 from app.core.config import Settings, get_settings
 
