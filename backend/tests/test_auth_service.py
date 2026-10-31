@@ -11,7 +11,7 @@ from app.services.auth_service import AuthenticationError, AuthenticationService
 
 
 @pytest.fixture
- def session():
+def session():
     engine = create_engine("sqlite+pysqlite:///:memory:")
     Base.metadata.create_all(engine)
     with Session(engine) as db_session:
