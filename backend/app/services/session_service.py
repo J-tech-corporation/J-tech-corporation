@@ -18,7 +18,11 @@ class SessionError(Exception):
 
 
 class SessionService:
-    """Manage per-device sessions; callers own transaction commit/rollback."""
+    """Manage per-device sessions; callers own transaction commit/rollback.
+
+    When reuse is detected, the caller must commit the transaction before
+    returning the security error so the session revocation is persisted.
+    """
 
     def __init__(
         self, session: Session, token_service: TokenService | None = None,
@@ -87,8 +91,8 @@ class SessionService:
         if (
             stored.revoked_at is not None
             or user_session.revoked_at is not None
-            or user_session.expires_at <= current
-            or stored.expires_at <= current
+            or self._is_expired(user_session.expires_at, current)
+            or self._is_expired(stored.expires_at, current)
             or not user_session.user.is_active
         ):
             raise SessionError("Invalid refresh token")
@@ -148,6 +152,13 @@ class SessionService:
                 .order_by(UserSession.created_at.desc())
             )
         )
+
+    @staticmethod
+    def _is_expired(expires_at: datetime, now: datetime) -> bool:
+        """Compare database timestamps consistently across timezone-aware backends."""
+        if expires_at.tzinfo is None:
+            expires_at = expires_at.replace(tzinfo=UTC)
+        return expires_at <= now
 
     def _revoke(self, user_session: UserSession, when: datetime) -> None:
         user_session.revoked_at = when
