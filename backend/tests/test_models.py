@@ -16,8 +16,15 @@ from app.models import (
 
 def test_identity_tables_are_registered_with_uuid_primary_keys() -> None:
     expected_tables = {
-        "users", "roles", "permissions", "user_roles", "user_sessions", "refresh_tokens", "user_mfa_methods",
-        "mfa_recovery_codes", "trusted_devices"
+        "users",
+        "roles",
+        "permissions",
+        "user_roles",
+        "user_sessions",
+        "refresh_tokens",
+        "user_mfa_methods",
+        "mfa_recovery_codes",
+        "trusted_devices",
     }
 
     assert expected_tables.issubset(Base.metadata.tables)
