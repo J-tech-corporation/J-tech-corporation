@@ -21,5 +21,7 @@ def test_alembic_configuration_loads_migration_script_directory() -> None:
 
 
 def test_alembic_target_metadata_is_available() -> None:
+    expected_tables = {"users", "roles", "permissions", "user_roles"}
+
     assert Base.metadata is not None
-    assert len(Base.metadata.tables) == 0
+    assert expected_tables.issubset(Base.metadata.tables)
