@@ -32,7 +32,10 @@ def test_authenticate_returns_user_for_valid_credentials(session: Session) -> No
         password_hash=hash_password("correct horse battery staple"),
     )
 
-    assert service.authenticate(email="CEO@example.test", password="correct horse battery staple") is user
+    authenticated_user = service.authenticate(
+        email="CEO@example.test", password="correct horse battery staple"
+    )
+    assert authenticated_user is user
 
 
 def test_authenticate_uses_same_error_for_unknown_user_and_wrong_password(session: Session) -> None:
