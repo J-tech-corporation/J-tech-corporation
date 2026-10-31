@@ -20,7 +20,10 @@ class RefreshToken(Base):
 
     id: Mapped[UUID] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=uuid4)
     session_id: Mapped[UUID] = mapped_column(
-        Uuid(as_uuid=True), ForeignKey("user_sessions.id", ondelete="CASCADE"), nullable=False, index=True
+        Uuid(as_uuid=True),
+        ForeignKey("user_sessions.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
     )
     token_hash: Mapped[str] = mapped_column(String(64), unique=True, nullable=False, index=True)
     created_at: Mapped[datetime] = mapped_column(
