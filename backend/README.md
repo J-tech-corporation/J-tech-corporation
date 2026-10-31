@@ -51,3 +51,28 @@ These commands are documentation only; no dependencies were installed and no com
 - Password hashing primitives use Argon2id and are not yet wired into authentication.
 - Role membership helper is foundational only; authorization policies and enforcement are not yet wired into routes.
 - Health status reports process/API health only, not database or downstream dependency readiness.
+
+## PostgreSQL connection check
+
+The regular test suite uses isolated SQLite databases and does not require a running PostgreSQL server.
+
+To run the optional real-PostgreSQL integration test, provide a dedicated test database URL through the environment. Do not commit credentials or place a production database URL here.
+
+Windows PowerShell:
+
+```powershell
+$env:ATECH_TEST_DATABASE_URL = "postgresql+psycopg://<user>:<password>@<host>:5432/<test_database>"
+pytest -v tests/test_database_connection.py
+Remove-Item Env:ATECH_TEST_DATABASE_URL
+```
+
+macOS / Linux:
+
+```bash
+export ATECH_TEST_DATABASE_URL="postgresql+psycopg://<user>:<password>@<host>:5432/<test_database>"
+pytest -v tests/test_database_connection.py
+unset ATECH_TEST_DATABASE_URL
+```
+
+The integration test only executes `SELECT 1`; it does not create, migrate, modify, or delete database objects. It is skipped when the environment variable is not set.
+
