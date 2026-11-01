@@ -1,11 +1,16 @@
 """Association model connecting roles and permissions."""
 
+from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
 from sqlalchemy import ForeignKey, UniqueConstraint, Uuid
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base
+
+if TYPE_CHECKING:
+    from app.models.permission import Permission
+    from app.models.role import Role
 
 
 class RolePermission(Base):
@@ -26,10 +31,3 @@ class RolePermission(Base):
 
     role: Mapped["Role"] = relationship(back_populates="role_permissions")
     permission: Mapped["Permission"] = relationship(back_populates="role_permissions")
-
-
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from app.models.permission import Permission
-    from app.models.role import Role
