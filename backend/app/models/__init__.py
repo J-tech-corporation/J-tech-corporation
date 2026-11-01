@@ -4,6 +4,8 @@ from app.models.base import Base
 from app.models.mfa_recovery_code import MFARecoveryCode
 from app.models.permission import Permission
 from app.models.policy import Policy
+from app.models.policy_approval_request import PolicyApprovalRequest
+from app.models.policy_approval_review import PolicyApprovalReview
 from app.models.policy_version import PolicyVersion
 from app.models.refresh_token import RefreshToken
 from app.models.role import Role
@@ -19,6 +21,8 @@ __all__ = [
     "MFARecoveryCode",
     "Permission",
     "Policy",
+    "PolicyApprovalRequest",
+    "PolicyApprovalReview",
     "PolicyVersion",
     "RefreshToken",
     "Role",
