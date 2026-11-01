@@ -1,7 +1,5 @@
 """Safe evaluator for the supported JSON business/project policy subset."""
 
-from typing import Any
-
 from app.models.policy import Policy
 from app.schemas.permission import PermissionEvaluationRequest
 
@@ -61,7 +59,9 @@ class PolicyEvaluator:
             operator = condition["operator"]
             expected = condition["value"]
             if field not in _ALLOWED_FIELDS or operator not in _ALLOWED_OPERATORS:
-                raise PolicyEvaluationError("Policy condition uses an unsupported field or operator")
+                raise PolicyEvaluationError(
+                    "Policy condition uses an unsupported field or operator"
+                )
             if operator == "in" and (
                 not isinstance(expected, list) or not expected or len(expected) > 100
             ):
