@@ -9,6 +9,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.models.base import Base
 
 if TYPE_CHECKING:
+    from app.models.role_permission import RolePermission
     from app.models.user_role import UserRole
 
 
@@ -22,5 +23,8 @@ class Role(Base):
     description: Mapped[str | None] = mapped_column(String(255), nullable=True)
 
     user_roles: Mapped[list["UserRole"]] = relationship(
+        back_populates="role", cascade="all, delete-orphan"
+    )
+    role_permissions: Mapped[list["RolePermission"]] = relationship(
         back_populates="role", cascade="all, delete-orphan"
     )
