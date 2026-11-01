@@ -1,4 +1,4 @@
-"""Version history model for policy definitions."""
+"""Version history model for immutable policy definition snapshots."""
 
 from datetime import datetime
 from typing import TYPE_CHECKING
@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 
 class PolicyVersion(Base):
-    """A numbered policy snapshot; application services must never edit old snapshots."""
+    """A semantic-versioned policy snapshot; snapshot fields are immutable by service contract."""
 
     __tablename__ = "policy_versions"
     __table_args__ = (
@@ -28,7 +28,7 @@ class PolicyVersion(Base):
         nullable=False,
         index=True,
     )
-    version: Mapped[int] = mapped_column(nullable=False)
+    version: Mapped[str] = mapped_column(String(32), nullable=False)
     name: Mapped[str] = mapped_column(String(160), nullable=False)
     description: Mapped[str | None] = mapped_column(String(1000), nullable=True)
     policy_type: Mapped[str] = mapped_column(String(32), nullable=False)
@@ -36,6 +36,7 @@ class PolicyVersion(Base):
     scope_id: Mapped[str | None] = mapped_column(String(128), nullable=True)
     rules: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     change_reason: Mapped[str] = mapped_column(String(1000), nullable=False)
+    snapshot_hash: Mapped[str] = mapped_column(String(64), nullable=False)
     created_by: Mapped[str] = mapped_column(String(128), nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
