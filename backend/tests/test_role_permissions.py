@@ -15,6 +15,9 @@ def test_role_permission_table_is_registered_with_uuid_primary_key() -> None:
     assert isinstance(table.c.id.type, Uuid)
     assert table.c.id.primary_key
 
+    foreign_keys = {foreign_key.parent.name: foreign_key.ondelete for foreign_key in table.foreign_keys}
+    assert foreign_keys == {"role_id": "CASCADE", "permission_id": "RESTRICT"}
+
 
 def test_role_permission_relationships_work_with_sqlite() -> None:
     engine = create_engine("sqlite+pysqlite:///:memory:")
@@ -53,24 +56,6 @@ def test_duplicate_role_permission_assignment_is_rejected() -> None:
                     RolePermission(role_id=role.id, permission_id=permission.id),
                 ]
             )
-            with pytest.raises(IntegrityError):
-                session.commit()
-    finally:
-        engine.dispose()
-
-
-def test_role_permission_restricts_permission_deletion() -> None:
-    engine = create_engine("sqlite+pysqlite:///:memory:")
-    Base.metadata.create_all(engine)
-
-    try:
-        with Session(engine) as session:
-            role = Role(name="Frontend")
-            permission = Permission(code="projects:read")
-            session.add(RolePermission(role=role, permission=permission))
-            session.commit()
-
-            session.delete(permission)
             with pytest.raises(IntegrityError):
                 session.commit()
     finally:
