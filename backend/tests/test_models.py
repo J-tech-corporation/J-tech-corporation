@@ -144,9 +144,10 @@ def test_policy_version_relationships_work_with_sqlite() -> None:
             policy = Policy(policy_key="security.mfa", name="Require MFA",
                             policy_type="SECURITY", scope_type="GLOBAL",
                             status="DRAFT", current_version=1, created_by="ceo")
-            version = PolicyVersion(version=1, name="Require MFA",
+            version = PolicyVersion(version="1.0.0", name="Require MFA",
                                     policy_type="SECURITY", scope_type="GLOBAL",
-                                    change_reason="Initial", created_by="ceo")
+                                    change_reason="Initial", snapshot_hash="a" * 64,
+                                    created_by="ceo")
             policy.versions.append(version)
             session.add(policy)
             session.commit()
