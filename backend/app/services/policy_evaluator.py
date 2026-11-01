@@ -1,5 +1,7 @@
 """Safe evaluator for the supported JSON business/project policy subset."""
 
+from typing import Any
+
 from app.models.policy import Policy
 from app.schemas.permission import PermissionEvaluationRequest
 
