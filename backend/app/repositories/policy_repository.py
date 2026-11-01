@@ -54,3 +54,16 @@ class PolicyRepository:
         if policy_type is not None:
             statement = statement.where(Policy.policy_type == policy_type)
         return list(self.session.scalars(statement).all())
+
+    def list_active_evaluable_policies(self, *, limit: int = 100) -> list[Policy]:
+        """Return active business/project policies; security rules remain code-defined."""
+        statement = (
+            select(Policy)
+            .where(
+                Policy.status == "ACTIVE",
+                Policy.policy_type.in_(("BUSINESS", "PROJECT")),
+            )
+            .order_by(Policy.policy_key)
+            .limit(limit)
+        )
+        return list(self.session.scalars(statement).all())
