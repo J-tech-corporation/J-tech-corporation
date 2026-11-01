@@ -9,7 +9,6 @@ from pydantic import Field, field_validator
 
 from app.schemas.auth import StrictSchema
 
-
 SEMANTIC_VERSION_PATTERN = r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$"
 
 
