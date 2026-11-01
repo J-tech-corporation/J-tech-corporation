@@ -1,9 +1,12 @@
 """Tests for policy registry models and service."""
+
 from uuid import UUID
+
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
+
 from app.models import Base, Policy, PolicyVersion
 from app.schemas.policy import PolicyCreate, PolicyScopeType, PolicyType
 from app.services.policy_registry import PolicyRegistry
@@ -77,14 +80,28 @@ def test_policy_version_numbers_are_unique_per_policy(db_session: Session) -> No
     )
     db_session.add(policy)
     db_session.flush()
-    db_session.add_all([
-        PolicyVersion(policy_id=policy.id, version=1, name="Require MFA",
-                      policy_type="SECURITY", scope_type="GLOBAL",
-                      change_reason="Initial", created_by="ceo"),
-        PolicyVersion(policy_id=policy.id, version=1, name="Duplicate",
-                      policy_type="SECURITY", scope_type="GLOBAL",
-                      change_reason="Duplicate", created_by="ceo"),
-    ])
+    db_session.add_all(
+        [
+            PolicyVersion(
+                policy_id=policy.id,
+                version=1,
+                name="Require MFA",
+                policy_type="SECURITY",
+                scope_type="GLOBAL",
+                change_reason="Initial",
+                created_by="ceo",
+            ),
+            PolicyVersion(
+                policy_id=policy.id,
+                version=1,
+                name="Duplicate",
+                policy_type="SECURITY",
+                scope_type="GLOBAL",
+                change_reason="Duplicate",
+                created_by="ceo",
+            ),
+        ]
+    )
     with pytest.raises(IntegrityError):
         db_session.commit()
 
@@ -101,13 +118,15 @@ def test_policy_repository_filters_by_status_and_type(db_session: Session) -> No
 
     registry = PolicyRegistry(db_session)
     registry.create_policy(make_payload())
-    registry.create_policy(make_payload(
-        policy_key="business.leave.approval",
-        policy_type=PolicyType.BUSINESS,
-        scope_type=PolicyScopeType.GLOBAL,
-        scope_id=None,
-        name="Leave approval",
-    ))
+    registry.create_policy(
+        make_payload(
+            policy_key="business.leave.approval",
+            policy_type=PolicyType.BUSINESS,
+            scope_type=PolicyScopeType.GLOBAL,
+            scope_id=None,
+            name="Leave approval",
+        )
+    )
     db_session.commit()
     repository = PolicyRepository(db_session)
     assert len(repository.list_policies(status="DRAFT")) == 2
