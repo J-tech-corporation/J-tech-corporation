@@ -26,7 +26,7 @@ class Policy(Base):
     scope_type: Mapped[str] = mapped_column(String(32), nullable=False)
     scope_id: Mapped[str | None] = mapped_column(String(128), nullable=True)
     status: Mapped[str] = mapped_column(String(32), default="DRAFT", nullable=False, index=True)
-    current_version: Mapped[int] = mapped_column(default=1, nullable=False)
+    current_version: Mapped[str] = mapped_column(String(32), default="1.0.0", nullable=False)
     rules: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     created_by: Mapped[str] = mapped_column(String(128), nullable=False)
     created_at: Mapped[datetime] = mapped_column(
