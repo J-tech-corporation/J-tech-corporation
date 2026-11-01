@@ -4,6 +4,7 @@ Revision ID: p104b5221
 Revises: p104b501
 """
 from typing import Sequence
+
 import sqlalchemy as sa
 from alembic import op
 
@@ -30,7 +31,6 @@ def upgrade() -> None:
         sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
         sa.Column("updated_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
         sa.PrimaryKeyConstraint("id"),
-        sa.UniqueConstraint("policy_key", name="uq_policies_policy_key"),
     )
     op.create_index("ix_policies_policy_key", "policies", ["policy_key"], unique=True)
     op.create_index("ix_policies_status", "policies", ["status"], unique=False)
