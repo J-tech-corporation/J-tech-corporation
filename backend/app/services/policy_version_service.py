@@ -86,6 +86,6 @@ class PolicyVersionService:
 
     def list_versions(self, policy_id: UUID) -> list[PolicyVersion]:
         """Return all snapshots for a policy in creation order."""
-        if self.repository.get_by_id_for_update(policy_id) is None:
+        if self.repository.get_by_id(policy_id) is None:
             raise PolicyNotFoundError("Policy was not found")
         return self.repository.list_versions(policy_id)
