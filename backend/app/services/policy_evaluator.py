@@ -1,7 +1,5 @@
 """Safe evaluator for the supported JSON business/project policy subset."""
 
-from typing import Any
-
 from app.models.policy import Policy
 from app.schemas.permission import PermissionEvaluationRequest
 
@@ -53,7 +51,7 @@ class PolicyEvaluator:
         if not isinstance(conditions, list) or not conditions:
             raise PolicyEvaluationError("Policy must contain a non-empty all condition list")
 
-        context: dict[str, Any] = request.model_dump()
+        context: dict[str, object] = request.model_dump()
         for condition in conditions:
             if not isinstance(condition, dict) or set(condition) != {"field", "operator", "value"}:
                 raise PolicyEvaluationError("Each condition must define field, operator, and value")
