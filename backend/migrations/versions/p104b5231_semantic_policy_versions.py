@@ -17,24 +17,6 @@ branch_labels: str | Sequence[str] | None = None
 depends_on: str | Sequence[str] | None = None
 
 
-def _snapshot_hash(row: sa.Row) -> str:
-    snapshot = {
-        "version": f"{row.version}.0.0",
-        "name": row.name,
-        "description": row.description,
-        "policy_type": row.policy_type,
-        "scope_type": row.scope_type,
-        "scope_id": row.scope_id,
-        "rules": row.rules,
-        "change_reason": row.change_reason,
-        "created_by": row.created_by,
-    }
-    canonical = json.dumps(
-        snapshot, ensure_ascii=False, sort_keys=True, separators=(",", ":")
-    ).encode("utf-8")
-    return hashlib.sha256(canonical).hexdigest()
-
-
 def upgrade() -> None:
     op.alter_column(
         "policies",
