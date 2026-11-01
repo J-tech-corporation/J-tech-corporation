@@ -33,6 +33,11 @@ class PolicyRepository:
         )
         return self.session.scalar(statement)
 
+    def get_by_id_for_update(self, policy_id: UUID) -> Policy | None:
+        """Lock a policy row while assigning its next version number."""
+        statement = select(Policy).where(Policy.id == policy_id).with_for_update()
+        return self.session.scalar(statement)
+
     def get_by_key(self, policy_key: str) -> Policy | None:
         statement = (
             select(Policy)
@@ -40,6 +45,28 @@ class PolicyRepository:
             .where(Policy.policy_key == policy_key)
         )
         return self.session.scalar(statement)
+
+    def get_version(self, policy_id: UUID, version: str) -> PolicyVersion | None:
+        statement = select(PolicyVersion).where(
+            PolicyVersion.policy_id == policy_id,
+            PolicyVersion.version == version,
+        )
+        return self.session.scalar(statement)
+
+    def list_versions(self, policy_id: UUID) -> list[PolicyVersion]:
+        statement = (
+            select(PolicyVersion)
+            .where(PolicyVersion.policy_id == policy_id)
+            .order_by(PolicyVersion.created_at, PolicyVersion.version)
+        )
+        return list(self.session.scalars(statement).all())
+
+    def add_version(self, policy: Policy, version: PolicyVersion) -> PolicyVersion:
+        policy.versions.append(version)
+        policy.current_version = version.version
+        self.session.add(version)
+        self.session.flush()
+        return version
 
     def list_policies(
         self,
